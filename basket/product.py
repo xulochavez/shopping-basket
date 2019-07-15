@@ -4,7 +4,7 @@
 class Product:
     """Class that encapsulates a product item to be purchased."""
 
-    def __init__(self, name, price, unit):
+    def __init__(self, name, price, unit, active=True):
         """
         Given a name, price and unit constructs a product that can be
         used in purchases.
@@ -16,6 +16,7 @@ class Product:
         self.name = name.lower()
         self.price = int(price)  # Assumed price is in pence
         self.unit = unit.lower()
+        self.active = active
         self._promotion = None
 
     def apply_promotion(self, promotion):

@@ -1,17 +1,17 @@
 [
   {
-    "name": "Soup", "price": 65, "unit": "Tin"
+    "name": "Soup", "price": 65, "unit": "Tin", "active": true
   },
   {
-    "name": "Bread", "price": 80, "unit": "Loaf"
+    "name": "Bread", "price": 80, "unit": "Loaf", "active": true
   },
   {
-    "name": "Milk", "price": 130, "unit": "Bottle"
+    "name": "Milk", "price": 130, "unit": "Bottle", "active": true
   },
   {
-    "name": "Apples", "price": 100, "unit": "Bag"
+    "name": "Apples", "price": 100, "unit": "Bag", "active": true
   },
   {
-    "name": "Soap", "price": 59, "unit": "Bar"
+    "name": "Soap", "price": 59, "unit": "Bar", "active": true
   }
 ]

@@ -9,16 +9,19 @@ import basket.__main__ as main
 def products_json():
     return """[
     {
-      "name": "Soup", "price": 65, "unit": "Tin"
+      "name": "Soup", "price": 65, "unit": "Tin", "active": true
     },
     {
-      "name": "Bread", "price": 80, "unit": "Loaf"
+      "name": "Bread", "price": 80, "unit": "Loaf", "active": true
     },
     {
-      "name": "Milk", "price": 130, "unit": "Bottle"
+      "name": "Milk", "price": 130, "unit": "Bottle", "active": true
     },
     {
-      "name": "Apples", "price": 100, "unit": "Bag"
+      "name": "Apples", "price": 100, "unit": "Bag", "active": true
+    },
+    {
+      "name": "Headphones", "price": 500, "unit": "Box", "active": false
     }]"""
 
 
@@ -26,7 +29,7 @@ def products_json():
 def faulty_products_json():
     return """[
     {
-      "name": "Apples", "price": "100.0", "unit": "Bag"
+      "name": "Apples", "price": "100.0", "unit": "Bag", "active": true
     }]"""
 
 
@@ -241,6 +244,11 @@ def test_load_products_no_stock(empty_json_file):
     products = main.load_products(empty_json_file)
     assert products == {}
     assert len(products) is 0
+
+
+def test_load_products_inactive(products_json_file):
+    products = main.load_products(products_json_file)
+    assert 'headphones' not in products
 
 
 def test_load_prod_bad_item(faulty_products_json_file, capsys):

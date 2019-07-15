@@ -115,8 +115,9 @@ def load_products(products_file_path):
         # Build products list
         for prod in data:
             try:
-                p = product.Product(prod['name'], prod['price'], prod['unit'])
-                products[p.name] = p
+                p = product.Product(prod['name'], prod['price'], prod['unit'], prod['active'])
+                if p.active:
+                    products[p.name] = p
             except ValueError as e:
                 logger.log(f'Failed to load a product with data: {prod} ({e})',
                            SimpleLogger.error)
