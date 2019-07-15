@@ -20,7 +20,7 @@ def prod_promo():
 @pytest.mark.parametrize('unit', ['bag', 'Bag', 'bAg'])
 def test_prod(name, price, unit):
     prod = product.Product(name, price, unit)
-    assert prod.name == 'appels'
+    assert prod.name == 'apples'
     assert prod.price == 100
     assert prod.unit == 'bag'
 

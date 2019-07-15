@@ -149,7 +149,7 @@ def test_log(capsys):
 
 def test_log_error(capsys):
     main.LOGGING = True
-    main.log('foo', level=main.ERROR)
+    main.logger.log('foo', level=main.SimpleLogger.error)
     stdout, _ = capsys.readouterr()
     assert 'ERROR: foo' in stdout
 
