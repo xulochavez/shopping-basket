@@ -138,25 +138,38 @@ def empty_json_file(tmpdir, empty_json):
     return str(tmpfile)
 
 
-def test_log(capsys):
-    main.logger.enabled = True
-    main.logger.log('foo')
+@pytest.fixture
+def main_logger():
+    original_enabled = main.logger.enabled
+    yield main.logger
+    main.logger.enabled = original_enabled
+
+
+def test_log(capsys, main_logger):
+    main_logger.enabled = True
+    main_logger.log('foo')
     stdout, _ = capsys.readouterr()
     assert isinstance(time.strptime(stdout[:19], '%Y-%m-%d %H:%M:%S'),
                       time.struct_time)
     assert 'INFO: foo' in stdout
 
 
-def test_log_error(capsys):
-    main.LOGGING = True
-    main.logger.log('foo', level=main.SimpleLogger.error)
+def test_log_error(capsys, main_logger):
+    main_logger.enabled = True
+    main_logger.log('foo', level=main.SimpleLogger.error)
     stdout, _ = capsys.readouterr()
     assert 'ERROR: foo' in stdout
 
 
-def test_log_quiet(capsys):
-    main.logger.enabled = False
-    main.logger.log('foo')
+def test_logger_disabled_by_default(capsys, main_logger):
+    main_logger.log('foo', level=main.SimpleLogger.error)
+    stdout, _ = capsys.readouterr()
+    assert stdout == ''
+
+
+def test_log_quiet(capsys, main_logger):
+    main_logger.enabled = False
+    main_logger.log('foo')
     stdout, _ = capsys.readouterr()
     assert not len(stdout)
 
