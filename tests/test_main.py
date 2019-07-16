@@ -3,6 +3,7 @@ import time
 import pytest
 
 import basket.__main__ as main
+import basket.util as util
 
 
 @pytest.fixture
@@ -143,9 +144,9 @@ def empty_json_file(tmpdir, empty_json):
 
 @pytest.fixture
 def main_logger():
-    original_enabled = main.logger.enabled
-    yield main.logger
-    main.logger.enabled = original_enabled
+    original_enabled = util.logger.enabled
+    yield util.logger
+    util.logger.enabled = original_enabled
 
 
 def test_log(capsys, main_logger):
@@ -159,13 +160,13 @@ def test_log(capsys, main_logger):
 
 def test_log_error(capsys, main_logger):
     main_logger.enabled = True
-    main_logger.log('foo', level=main.SimpleLogger.error)
+    main_logger.log('foo', level=util.SimpleLogger.error)
     stdout, _ = capsys.readouterr()
     assert 'ERROR: foo' in stdout
 
 
 def test_logger_disabled_by_default(capsys, main_logger):
-    main_logger.log('foo', level=main.SimpleLogger.error)
+    main_logger.log('foo', level=util.SimpleLogger.error)
     stdout, _ = capsys.readouterr()
     assert stdout == ''
 
@@ -207,19 +208,19 @@ class TestParseArgs:
 
 
 def test_load_json(ok_json_file):
-    assert main.load_json(ok_json_file) is not None
+    assert util.load_json(ok_json_file) is not None
 
 
 def test_load_json_no_file(capsys):
     main.logger.enabled = True
-    assert main.load_json('foo.json') is None
+    assert util.load_json('foo.json') is None
     stdout, _ = capsys.readouterr()
     assert 'ERROR: No such file or directory: foo.json' in stdout
 
 
 def test_load_json_bad_file(bad_json_file, capsys):
     main.LOGGING = True
-    assert main.load_json(bad_json_file) is None
+    assert util.load_json(bad_json_file) is None
     stdout, _ = capsys.readouterr()
     assert 'ERROR: Failed to parse data file' in stdout
     assert 'bad.json' in stdout

@@ -1,5 +1,4 @@
 from flask import Flask, make_response, jsonify
-from flask_migrate import Migrate
 
 from basket.service_config import Config
 from basket import service_routes

@@ -11,36 +11,11 @@ offers are are loaded (by default) from the json file `promotions.json`.
 
 
 import argparse
-import json
 import sys
-import time
 
-from flask import Flask, make_response, jsonify
-
-from basket import product
-from basket import promotion
 from basket import basket
-from basket.service_config import Config
-from basket import service_routes
-
-
-class SimpleLogger:
-    enabled = False
-    info = 'INFO'
-    error = 'ERROR'
-
-    def log(self, message, level=info):
-        """Simple logger.
-
-        :param str message: Log message
-        :param str level: Log level name
-        """
-        if self.enabled:
-            now = time.strftime('%Y-%m-%d %H:%M:%S')
-            print('{} {}: {}'.format(now, level, message))
-
-
-logger = SimpleLogger()
+from basket import util
+from basket.util import logger, load_products, load_promotions
 
 
 def parse_args(argv=None):
@@ -84,71 +59,6 @@ def parse_args(argv=None):
     return parser.parse_args(argv)
 
 
-def load_json(json_file_path):
-    """Load json data.
-
-    :param str json_file_path: Path to json file to load.
-    """
-    data = None
-    try:
-        with open(json_file_path) as f:
-            data = json.load(f)
-    except EnvironmentError:
-        logger.log(f'No such file or directory: {json_file_path}',
-                   SimpleLogger.error)
-    except json.JSONDecodeError as e:
-        logger.log(f'Failed to parse data file {json_file_path}: {e}',
-                   SimpleLogger.error)
-    return data
-
-
-def load_products(products_file_path):
-    """Load product definitions.
-
-    Load product definition data describing the products this program will
-    accept including product names, units and price.
-
-    :param str products_file_path: Path to goods file.
-    :return dict: Dictionary of product.Product instances.
-    """
-    products = {}
-    data = load_json(products_file_path)
-    if data is None:
-        logger.log('No stock found in product data')
-    else:
-        # Build products list
-        for prod in data:
-            try:
-                p = product.Product(prod['name'], prod['price'], prod['unit'], prod['active'])
-                if p.active:
-                    products[p.name] = p
-            except ValueError as e:
-                logger.log(f'Failed to load a product with data: {prod} ({e})',
-                           SimpleLogger.error)
-    return products
-
-
-def load_promotions(promotions_file_path):
-    """Load promotions.
-
-    Load promotions data that specifies discounts that can be applied
-    to goods purchased.
-
-    :param str promotions_file_path: Path to promotions file.
-    :return list: List of promotion.Promotion instances.
-    """
-    promotions = []
-    data = load_json(promotions_file_path)
-    if data:
-        for prod_promo in data:
-            try:
-                promotions.append(promotion.Promotion(prod_promo))
-            except (ValueError, KeyError) as e:
-                logger.log('Failed to load offer with data: '
-                           f'{prod_promo} ({e})', SimpleLogger.error)
-    return promotions
-
-
 def main(argv=None):
     """Program entry point.
 
@@ -185,27 +95,6 @@ def main(argv=None):
     else:
         print('(No offers available)')
     print(f'Total: £{shopping_basket.total/100:.2f}')
-
-
-def create_app(test_config=None):
-    app = Flask(__name__)
-
-    if test_config:
-        app.config.from_object(test_config)
-    else:
-        app.config.from_object(Config)
-
-    app.register_blueprint(service_routes.bp)
-
-    @app.errorhandler(500)
-    def internal_server_error(error):
-        return make_response(jsonify({'error': 'Internal Server error'}), 500)
-
-    @app.errorhandler(404)
-    def not_found(error):
-        return make_response(jsonify({'error': 'Not found'}), 404)
-
-    return app
 
 
 if __name__ == '__main__':  # pragma: no cover
